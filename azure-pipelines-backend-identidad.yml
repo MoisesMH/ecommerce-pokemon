@@ -33,14 +33,14 @@ stages:
       displayName: 'Download and install Maven 3.8.6'
       inputs:
         script: curl -L https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz -o maven.tar.gz /
-                  && tar -xvf maven.tar.gz
-                  && mv apache-maven-3.8.6 /opt/
+                  && tar -xvf maven.tar.gz /
+                  && mv apache-maven-3.8.6 maven
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     
     - task: CmdLine@2
       displayName: 'Setting up Maven environmental variables'
       inputs:
-        script: export M2_HOME='/opt/apache-maven-3.8.6' \
+        script: export M2_HOME=$(System.DefaultWorkingDirectory)/maven \
                   && export PATH="$M2_HOME/bin:$PATH"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     
