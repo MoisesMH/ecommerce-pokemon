@@ -24,7 +24,7 @@ stages:
       inputs:
         script: |
           apt-get update \
-              && apt-get install -y zip tar wget \
+              && apt-get install -y zip tar wget unzip \
               && apt-get autoremove \
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
@@ -32,21 +32,21 @@ stages:
     - task: CmdLine@2
       displayName: 'Download Maven 3.8.6'
       inputs:
-        script: wget -q "https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz"
+        script: wget -q "https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
 
     - task: CmdLine@2
       displayName: 'Extract Maven 3.8.6'
       inputs:
-        script: tar -xvf apache-maven-3.8.6-bin.tar.gz \
-                  && mv apache-maven-3.8.6 maven
+        script: unzip apache-maven-3.8.6-bin.zip \
+                    && mv apache-maven-3.8.6 maven
         workingDirectory: '$(System.DefaultWorkingDirectory)'
 
     - task: CmdLine@2
       displayName: 'Setting up Maven environmental variables'
       inputs:
         script: export M2_HOME=$(System.DefaultWorkingDirectory)/maven \
-                  && export PATH="$M2_HOME/bin:$PATH"
+                    && export PATH="$M2_HOME/bin:$PATH"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     
     - task: CmdLine@2
