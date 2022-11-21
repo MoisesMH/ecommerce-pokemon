@@ -45,10 +45,9 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: 'Restore project'
       inputs:
-        command: 'restore'
+        command: 'custom'
         projects: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(projectName).csproj'
-        feedsToUse: 'select'
-        vstsFeed: '68adebb6-f88f-418c-b947-3efe734d15a5'
+        custom: 'restore'
         
     - task: DotNetCoreCLI@2
       displayName: 'Build project'
