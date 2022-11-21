@@ -24,7 +24,7 @@ stages:
       inputs:
         script: |
           apt-get update \
-              && apt-get install -y zip tar \
+              && apt-get install -y zip tar wget \
               && apt-get autoremove \
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
@@ -32,7 +32,7 @@ stages:
     - task: CmdLine@2
       displayName: 'Download and install Maven 3.8.6'
       inputs:
-        script: curl -L -O https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz \
+        script: wget -q "https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz" \
                   && tar -xvf apache-maven-3.8.6-bin.tar.gz \
                   && mv apache-maven-3.8.6 maven
         workingDirectory: '$(System.DefaultWorkingDirectory)'
