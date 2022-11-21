@@ -24,7 +24,7 @@ stages:
       inputs:
         script: |
           apt-get update \
-              && apt-get install -y zip tar \
+              && apt-get install -y zip tar wget \
               && apt-get autoremove \
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
