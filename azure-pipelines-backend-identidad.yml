@@ -35,7 +35,7 @@ stages:
         script: |
           mkdir pokeshop-backend \
             && cd pokeshop-backend
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
     - task: CmdLine@2
       displayName: 'Git clone modules'
