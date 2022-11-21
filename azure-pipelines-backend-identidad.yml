@@ -1,0 +1,113 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- main
+
+variables:
+  agentpool: 'dockeragent_moises_2'
+  prodEnvironmentName: 'production'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool: $(agentpool)
+
+    steps:
+    - task: CmdLine@2
+      displayName: 'Update system, its dependencies and install zip utility.'
+      inputs:
+        script: |
+          apt-get update \
+              && apt-get install -y zip \
+              && apt-get autoremove \
+              && apt-get clean \
+              && rm -rf /var/lib/apt/lists/*
+    
+    - task: CmdLine@2
+      displayName: 'Create and go to project folder'
+      inputs:
+        script: |
+          mkdir pokeshop-backend \
+            && cd pokeshop-backend
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: CmdLine@2
+      displayName: 'Git clone modules'
+      inputs:
+        script: |
+          git clone https://github.com/NyoByte/pokeshop-backend-utils \
+            && git clone https://github.com/NyoByte/pokeshop-backend-entity-identidad
+        workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
+
+    - task: CmdLine@2
+      displayName: 'Copy main module'
+      inputs:
+        script: 'cp -rf $(System.DefaultWorkingDirectory)/src/Services/Entidad/pokeshop-backend-identidad .'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
+
+    - task: CmdLine@2
+      displayName: 'Go to utils module folder'
+      inputs:
+        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-utils'
+        workingDirectory: '$(System.DefaultWorkingDirectory)' 
+
+    - task: Maven@4
+      displayName: 'Clean install utils module'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        options: 'clean install'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+        
+    - task: CmdLine@2
+      displayName: 'Go to entity-identidad module folder'
+      inputs:
+        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-entity-identidad'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: Maven@4
+      displayName: 'Clean install entity-identidad module'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        options: 'clean install'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+
+    - task: CmdLine@2
+      displayName: 'Go to main module folder'
+      inputs:
+        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-identidad'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: Maven@4
+      displayName: 'Clean install main module'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        options: 'clean install'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+
