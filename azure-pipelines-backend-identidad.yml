@@ -30,13 +30,18 @@ stages:
               && rm -rf /var/lib/apt/lists/*
     
     - task: CmdLine@2
-      displayName: 'Download and install Maven 3.8.6'
+      displayName: 'Download Maven 3.8.6'
       inputs:
-        script: wget -q "https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz" \
-                  && tar -xvf apache-maven-3.8.6-bin.tar.gz \
+        script: wget -q "https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: CmdLine@2
+      displayName: 'Extract Maven 3.8.6'
+      inputs:
+        script: tar -xvf apache-maven-3.8.6-bin.tar.gz \
                   && mv apache-maven-3.8.6 maven
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-    
+
     - task: CmdLine@2
       displayName: 'Setting up Maven environmental variables'
       inputs:
