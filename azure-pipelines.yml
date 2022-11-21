@@ -16,7 +16,7 @@ variables:
   prodEnvironmentName: 'production'
   webAppName: 'pokecatalogdb'
   projectName: 'Catalog.API'
-  azureSubscription: $(AZ_SUBSCRIPTION)
+  azureSubscription: 'Azure for Students (0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
 
 stages:
 - stage: Build
