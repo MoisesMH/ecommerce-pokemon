@@ -12,7 +12,7 @@ variables:
   buildConfiguration: 'Release'
   agentpool: 'dockeragent_moises_2'
   prodEnvironmentName: 'production'
-  webAppName: 'todolistapp1'
+  webAppName: 'pokecatalogdb'
   projectName: 'Catalog.API'
   azureSubscription: $(AZ_SUBSCRIPTION)
 
