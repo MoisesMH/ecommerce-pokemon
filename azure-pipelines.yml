@@ -122,5 +122,4 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
               StartupCommand: 'dotnet $(projectName).dll'
-
-
+              
