@@ -51,16 +51,10 @@ stages:
         script: 'cp -rf $(System.DefaultWorkingDirectory)/src/Services/Entidad/pokeshop-backend-identidad .'
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
 
-    - task: CmdLine@2
-      displayName: 'Go to utils module folder'
-      inputs:
-        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-utils'
-        workingDirectory: '$(System.DefaultWorkingDirectory)' 
-
     - task: Maven@4
       displayName: 'Clean install utils module'
       inputs:
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-utils/pom.xml'
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -70,17 +64,11 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
-        
-    - task: CmdLine@2
-      displayName: 'Go to entity-identidad module folder'
-      inputs:
-        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-entity-identidad'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
 
     - task: Maven@4
       displayName: 'Clean install entity-identidad module'
       inputs:
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-entity-identidad/pom.xml'
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -91,16 +79,10 @@ stages:
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
 
-    - task: CmdLine@2
-      displayName: 'Go to main module folder'
-      inputs:
-        script: 'cd $(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-identidad'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
-
     - task: Maven@4
       displayName: 'Clean install main module'
       inputs:
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-identidad/pom.xml'
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
