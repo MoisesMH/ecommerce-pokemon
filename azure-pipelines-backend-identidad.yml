@@ -9,6 +9,10 @@ trigger:
 variables:
   agentpool: 'dockeragent_moises_2'
   prodEnvironmentName: 'production'
+  JAVA_LINK: 'https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz'
+  JAVA_VERSION: '17.0.5'
+  MAVEN_LINK: 'https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz'
+  MAVEN_VERSION: '3.8.6'
 
 stages:
 - stage: Build
@@ -29,35 +33,37 @@ stages:
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
     
-    - task: JavaToolInstaller@0
-      displayName: 'Installing JDK 17'
-      inputs:
-        versionSpec: '17'
-        jdkArchitectureOption: 'x64'
-        jdkSourceOption: 'PreInstalled'
-
     - task: CmdLine@2
-      displayName: 'Download and extract Maven 3.8.6'
+      displayName: 'Download and extract JDK 17'
       inputs:
         script: |
-          wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz \
-              && tar -xf apache-maven-3.8.6-bin.tar.gz -C /opt
+          wget -q $(JAVA_LINK) \
+              && tar -xf jdk-17_linux-x64_bin.tar.gz -C /opt
+        workingDirectory: '$(System.DefaultWorkingDirectory)/src'
+
+    - task: CmdLine@2
+      displayName: 'Setting up Java environmental variables'
+      inputs:
+        script: |
+          export JAVA_HOME=/opt/jdk-$(JAVA_VERSION) \
+              && export PATH="$JAVA_HOME/bin:$PATH"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: CmdLine@2
+      displayName: 'Download and extract Maven $(MAVEN_VERSION)'
+      inputs:
+        script: |
+          wget -q $(MAVEN_LINK) \
+              && tar -xf apache-maven-$(MAVEN_VERSION)-bin.tar.gz -C /opt
         workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
     - task: CmdLine@2
       displayName: 'Setting up Maven environmental variables'
       inputs:
         script: |
-          export M2_HOME=/opt/apache-maven-3.8.6 \
+          export M2_HOME=/opt/apache-maven-$(MAVEN_VERSION) \
               && export PATH="$M2_HOME/bin:$PATH"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-    
-    # - task: CmdLine@2
-    #   displayName: 'Install Maven 3.8.6'
-    #   inputs:
-    #     script: apt update \
-    #                 && apt install maven \
-    #                 && apt autoremove --purge
     
     - task: CmdLine@2
       displayName: 'Create project folder'
@@ -88,10 +94,10 @@ stages:
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.17'
+        javaHomeOption: 'Path'
+        jdkDirectory: '/opt/jdk-$(JAVA_VERSION)'
         mavenVersionOption: 'Path'
-        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenDirectory: '/opt/apache-maven-$(MAVEN_VERSION)'
         mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
@@ -104,10 +110,10 @@ stages:
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.17'
+        javaHomeOption: 'Path'
+        jdkDirectory: '/opt/jdk-$(JAVA_VERSION)'
         mavenVersionOption: 'Path'
-        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenDirectory: '/opt/apache-maven-$(MAVEN_VERSION)'
         mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
@@ -120,10 +126,10 @@ stages:
         options: 'clean install'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.17'
+        javaHomeOption: 'Path'
+        jdkDirectory: '/opt/jdk-$(JAVA_VERSION)'
         mavenVersionOption: 'Path'
-        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenDirectory: '/opt/apache-maven-$(MAVEN_VERSION)'
         mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
