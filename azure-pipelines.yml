@@ -68,6 +68,7 @@ stages:
         projects: '**/*.csproj'
         arguments: '-c $(buildConfiguration) --framework $(netVer) -r $(arch) --self-contained false -o $(AppPublishDir)'
         zipAfterPublish: false
+        modifyOutputPath: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
     - task: ArchiveFiles@2
