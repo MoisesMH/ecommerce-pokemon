@@ -53,11 +53,10 @@ stages:
     #                 && apt autoremove --purge
     
     - task: CmdLine@2
-      displayName: 'Create and go to project folder'
+      displayName: 'Create project folder'
       inputs:
         script: |
-          mkdir pokeshop-backend \
-            && cd pokeshop-backend
+          mkdir pokeshop-backend
         workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
     - task: CmdLine@2
@@ -72,7 +71,7 @@ stages:
       displayName: 'Copy main module'
       inputs:
         script: |
-          'cp -rf $(System.DefaultWorkingDirectory)/src/Services/Entidad/pokeshop-backend-identidad .'
+          cp -rf ../Services/Entidad/pokeshop-backend-identidad .
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
 
     - task: Maven@4
