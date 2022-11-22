@@ -64,8 +64,7 @@ stages:
       displayName: 'Publish project'
       inputs:
         command: 'publish'
-        publishWebProjects: false
-        projects: '**/*.csproj'
+        publishWebProjects: true
         arguments: '-c $(buildConfiguration) --framework $(netVer) -r $(arch) --self-contained false -o $(AppPublishDir)'
         zipAfterPublish: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
