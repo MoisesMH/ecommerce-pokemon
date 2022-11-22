@@ -16,7 +16,7 @@ variables:
   prodEnvironmentName: 'production'
   webAppName: 'pokecatalogdb'
   projectName: 'Catalog.API'
-  azureSubscription: $(AZ_SUBSCRIPTION)
+  # azureSubscription: $(AZ_SUBSCRIPTION)
 
 stages:
 - stage: Build
@@ -115,7 +115,7 @@ stages:
             displayName: 'Deploy to Azure App Service'
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: $(azureSubscription)
+              azureSubscription: $(AZ_SUBSCRIPTION)
               appType: 'webAppLinux'
               WebAppName: $(webAppName)
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
