@@ -33,8 +33,8 @@ stages:
       displayName: 'Download and extract Maven 3.8.6'
       inputs:
         script: |
-          wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip \
-                    && unzip apache-maven-3.8.6-bin.zip -d /opt
+          wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz \
+                    && tar -xf apache-maven-3.8.6-bin.tar.gz -C /opt
         workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
     - task: CmdLine@2
