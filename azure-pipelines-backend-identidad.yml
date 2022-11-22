@@ -29,19 +29,26 @@ stages:
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
     
-    - task: CmdLine@2
-      displayName: 'Download and extract Maven 3.8.6'
-      inputs:
-        script: wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip \
-                    && unzip apache-maven-3.8.6-bin.zip -d /opt
-        workingDirectory: '$(System.DefaultWorkingDirectory)/src'
+    # - task: CmdLine@2
+    #   displayName: 'Download and extract Maven 3.8.6'
+    #   inputs:
+    #     script: wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip \
+    #                 && unzip apache-maven-3.8.6-bin.zip -d /opt
+    #     workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
+    # - task: CmdLine@2
+    #   displayName: 'Setting up Maven environmental variables'
+    #   inputs:
+    #     script: export M2_HOME=/opt/apache-maven-3.8.6 \
+    #                 && export PATH="$M2_HOME/bin:$PATH"
+    #     workingDirectory: '$(System.DefaultWorkingDirectory)'
+    
     - task: CmdLine@2
-      displayName: 'Setting up Maven environmental variables'
+      displayName: 'Install Maven 3.8.6'
       inputs:
-        script: export M2_HOME=/opt/apache-maven-3.8.6 \
-                    && export PATH="$M2_HOME/bin:$PATH"
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        script: apt update \
+                    && apt install maven \
+                    && apt autoremove --purge
     
     - task: CmdLine@2
       displayName: 'Create and go to project folder'
