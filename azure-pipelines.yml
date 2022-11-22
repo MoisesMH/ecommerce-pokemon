@@ -53,7 +53,7 @@ stages:
       displayName: 'Build project'
       inputs:
         command: 'build'
-        projects: '$(projectName).csproj'
+        projects: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(projectName).csproj'
         arguments: '-c $(buildConfiguration) -o /app/build'
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
