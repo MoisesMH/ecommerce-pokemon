@@ -124,4 +124,4 @@ stages:
               WebAppName: '$(webAppName)'
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
+              StartupCommand: 'dotnet $(Pipeline.Workspace)/$(projectName)/$(projectName).dll'
