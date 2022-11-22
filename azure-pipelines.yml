@@ -18,6 +18,8 @@ variables:
   projectName: 'Catalog.API'
   azureSubscription: 'Azure for Students(0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
   AppPublishDir: '/app/publish'
+  netVer: 'net6.0'
+  arch: 'linux-x64'
 
 stages:
 - stage: Build
@@ -64,7 +66,7 @@ stages:
         command: 'publish'
         publishWebProjects: false
         projects: '**/*.csproj'
-        arguments: '-c $(buildConfiguration) --framework ''net6.0'' -r ''linux-x64'' --self-contained false -o $(AppPublishDir)'
+        arguments: '-c $(buildConfiguration) --framework $(netVer) -r $(arch) --self-contained false -o $(AppPublishDir)'
         zipAfterPublish: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
