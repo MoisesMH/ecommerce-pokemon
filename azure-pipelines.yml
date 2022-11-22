@@ -70,27 +70,19 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
     - task: ArchiveFiles@2
-      displayName: 'Archive files to publish folder'
+      displayName: 'Archive files and move publish pipeline artifacts folder'
       inputs:
         rootFolderOrFile: '$(AppPublishDir)/$(projectName)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(AppPublishDir)/$(projectName)/$(Build.BuildId).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(projectName).zip
         replaceExistingArchive: true
-
-    - task: CopyFiles@2
-      displayName: 'Copy Files to Publish Artifacts Directory'
-      inputs:
-        SourceFolder: '$(AppPublishDir)/$(projectName)'
-        Contents: '$(AppPublishDir)/$(projectName)/$(Build.BuildId).zip'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        OverWrite: true
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish pipeline artifacts'
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        artifact: '$(Build.BuildId)'
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(projectName).zip'
+        artifact: '$(projectName)'
         publishLocation: 'pipeline'
               
 - stage: Deploy
@@ -111,7 +103,7 @@ stages:
             displayName: 'Download pipeline artifacts'
             inputs:
               buildType: 'current'
-              artifactName: '$(Build.BuildId)'
+              artifactName: '$(projectName)'
               targetPath: '$(Pipeline.Workspace)'
               
           - task: AzureRmWebAppDeployment@4
@@ -121,6 +113,6 @@ stages:
               azureSubscription: $(azureSubscription)
               appType: 'webAppLinux'
               WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
+              packageForLinux: '$(Pipeline.Workspace)/$(projectName).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
               StartupCommand: 'dotnet $(projectName).dll'
