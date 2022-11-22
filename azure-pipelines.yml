@@ -89,36 +89,4 @@ stages:
         targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
         artifact: '$(Build.BuildId)'
         publishLocation: 'pipeline'
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: $(prodEnvironmentName)
-    pool: $(agentpool)
-    #   vmImage: $(vmImageName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download pipeline artifacts'
-            inputs:
-              buildType: 'current'
-              artifactName: '$(Build.BuildId)'
-              targetPath: '$(Pipeline.Workspace)'
-              
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Deploy project to Azure App Service'
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: $(azureSubscription)
-              appType: 'webAppLinux'
-              WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
-              RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName).dll'
               
