@@ -33,7 +33,7 @@ stages:
       inputs:
         script: |
           apt-get update \
-              && apt-get install -y zip \
+              && apt-get install -y zip apt-transport-https \
               && apt-get autoremove \
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
@@ -121,4 +121,4 @@ stages:
               WebAppName: $(webAppName)
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName).dll'
+              StartupCommand: 'apt-get update && apt-get install -y apt-transport-https && dotnet $(projectName).dll'
