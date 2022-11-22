@@ -73,7 +73,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files and move publish pipeline artifacts folder'
       inputs:
-        rootFolderOrFile: '$(AppPublishDir)/$(projectName)'
+        rootFolderOrFile: '$(AppPublishDir)'
         includeRootFolder: false
         archiveType: zip
         archiveFile: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
@@ -114,19 +114,14 @@ stages:
               buildType: 'current'
               artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
-              
-          - task: CmdLine@2
-            displayName: 'Delete buggy folder from .NET 6'
-            inputs:
-              script: 'rm -rf /home/site/wwwroot/wwwroot/Identity/lib/bootstrap/LICENSE/LICENSE'
 
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Azure App Service'
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: $(azureSubscription)
+              azureSubscription: '$(azureSubscription)'
               appType: 'webAppLinux'
-              WebAppName: $(webAppName)
+              WebAppName: '$(webAppName)'
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName).dll'
+              StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
