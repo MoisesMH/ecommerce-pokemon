@@ -29,6 +29,13 @@ stages:
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
     
+    - task: JavaToolInstaller@0
+      displayName: 'Installing JDK 17'
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
     - task: CmdLine@2
       displayName: 'Download and extract Maven 3.8.6'
       inputs:
