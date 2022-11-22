@@ -124,4 +124,9 @@ stages:
               WebAppName: '$(webAppName)'
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
+              StartupCommand: |
+                'export $(BLOB_CONNSTR) \
+                    && export $(COSMOSDB_CONNSTR) \
+                    && dotnet $(projectName)/$(projectName).dll'
+
+          
