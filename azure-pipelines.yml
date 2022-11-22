@@ -12,7 +12,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  agentpool: 'dockeragent_moises'
+  agentpool: 'dockeragent_moises_2'
   prodEnvironmentName: 'production'
   webAppName: 'pokecatalogdb'
   projectName: 'Catalog.API'
