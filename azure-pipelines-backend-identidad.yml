@@ -34,7 +34,7 @@ stages:
       inputs:
         script: |
           wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz \
-                    && tar -xf apache-maven-3.8.6-bin.tar.gz -C /opt
+              && tar -xf apache-maven-3.8.6-bin.tar.gz -C /opt
         workingDirectory: '$(System.DefaultWorkingDirectory)/src'
 
     - task: CmdLine@2
@@ -42,7 +42,7 @@ stages:
       inputs:
         script: |
           export M2_HOME=/opt/apache-maven-3.8.6 \
-                    && export PATH="$M2_HOME/bin:$PATH"
+              && export PATH="$M2_HOME/bin:$PATH"
         workingDirectory: '$(System.DefaultWorkingDirectory)'
     
     # - task: CmdLine@2
@@ -83,7 +83,9 @@ stages:
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.17'
-        mavenVersionOption: 'Default'
+        mavenVersionOption: 'Path'
+        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
@@ -97,7 +99,9 @@ stages:
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.17'
-        mavenVersionOption: 'Default'
+        mavenVersionOption: 'Path'
+        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
@@ -111,7 +115,9 @@ stages:
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.17'
-        mavenVersionOption: 'Default'
+        mavenVersionOption: 'Path'
+        mavenDirectory: '/opt/apache-maven-3.8.6'
+        mavenSetM2Home: true
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
