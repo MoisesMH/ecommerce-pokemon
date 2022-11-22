@@ -68,23 +68,22 @@ stages:
         projects: '**/*.csproj'
         arguments: '-c $(buildConfiguration) --framework $(netVer) -r $(arch) --self-contained false -o $(AppPublishDir)'
         zipAfterPublish: false
-        modifyOutputPath: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files to publish folder'
       inputs:
-        rootFolderOrFile: '$(AppPublishDir)'
+        rootFolderOrFile: '$(AppPublishDir)/$(projectName)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(AppPublishDir)/$(Build.BuildId).zip
+        archiveFile: $(AppPublishDir)/$(projectName)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
     - task: CopyFiles@2
       displayName: 'Copy Files to Publish Artifacts Directory'
       inputs:
-        SourceFolder: '$(AppPublishDir)'
-        Contents: '$(AppPublishDir)/$(Build.BuildId).zip'
+        SourceFolder: '$(AppPublishDir)/$(projectName)'
+        Contents: '$(AppPublishDir)/$(projectName)/$(Build.BuildId).zip'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
 
