@@ -75,14 +75,22 @@ stages:
         rootFolderOrFile: '$(AppPublishDir)/$(projectName)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(projectName).zip
+        archiveFile: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
         replaceExistingArchive: true
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to Publish Artifacts Directory'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        OverWrite: true
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish pipeline artifacts'
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)/$(projectName).zip'
-        artifact: '$(projectName)'
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        artifact: '$(Build.BuildId)'
         publishLocation: 'pipeline'
               
 - stage: Deploy
@@ -103,9 +111,14 @@ stages:
             displayName: 'Download pipeline artifacts'
             inputs:
               buildType: 'current'
-              artifactName: '$(projectName)'
+              artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
               
+          - task: CmdLine@2
+            displayName: 'Delete buggy folder from .NET 6'
+            inputs:
+              script: 'rm -rf /home/site/wwwroot/wwwroot/Identity/lib/bootstrap/LICENSE/LICENSE'
+
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Azure App Service'
             inputs:
@@ -113,6 +126,6 @@ stages:
               azureSubscription: $(azureSubscription)
               appType: 'webAppLinux'
               WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/$(projectName).zip'
+              packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
               StartupCommand: 'dotnet $(projectName).dll'
