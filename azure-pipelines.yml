@@ -17,6 +17,7 @@ variables:
   webAppName: 'pokecatalogdb'
   projectName: 'Catalog.API'
   azureSubscription: 'Azure for Students(0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
+  AppPublishDir: '/app/publish'
 
 stages:
 - stage: Build
@@ -62,24 +63,24 @@ stages:
       inputs:
         command: 'publish'
         publishWebProjects: true
-        arguments: '-c $(buildConfiguration) -o /app/publish'
+        arguments: '-c $(buildConfiguration) -o $(AppPublishDir)'
         zipAfterPublish: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files to publish folder'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
+        rootFolderOrFile: '$(AppPublishDir)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(Build.BuildId).zip
+        archiveFile: $(AppPublishDir)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
     - task: CopyFiles@2
       displayName: 'Copy Files to Publish Artifacts Directory'
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
-        Contents: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(Build.BuildId).zip'
+        SourceFolder: '$(AppPublishDir)'
+        Contents: '$(AppPublishDir)/$(Build.BuildId).zip'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
 
