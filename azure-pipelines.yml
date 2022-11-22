@@ -124,4 +124,4 @@ stages:
               WebAppName: $(webAppName)
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'apt-get update && apt-get install -y apt-transport-https && dotnet $(projectName).dll'
+              StartupCommand: 'dotnet $(projectName).dll'
