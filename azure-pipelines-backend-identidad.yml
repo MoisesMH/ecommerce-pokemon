@@ -76,8 +76,8 @@ stages:
       displayName: 'Git clone modules'
       inputs:
         script: |
-          git clone https://github.com/NyoByte/pokeshop-backend-utils \
-            && git clone https://github.com/NyoByte/pokeshop-backend-entity-identidad
+          git clone -b develop https://github.com/NyoByte/pokeshop-backend-utils \
+            && git clone -b develop https://github.com/NyoByte/pokeshop-backend-entity-identidad
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
 
     - task: CmdLine@2
@@ -91,7 +91,7 @@ stages:
       displayName: 'Clean install utils module'
       inputs:
         mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-utils/pom.xml'
-        options: 'clean install'
+        options: 'clean install -Dmaven.test.skip=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'Path'
@@ -107,7 +107,7 @@ stages:
       displayName: 'Clean install entity-identidad module'
       inputs:
         mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-entity-identidad/pom.xml'
-        options: 'clean install'
+        options: 'clean install -Dmaven.test.skip=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'Path'
@@ -120,10 +120,10 @@ stages:
         sonarQubeRunAnalysis: false
 
     - task: Maven@4
-      displayName: 'Clean install main module'
+      displayName: 'Deploy main module'
       inputs:
         mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-identidad/pom.xml'
-        options: 'clean install'
+        options: 'clean package -Dmaven.test.skip=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'Path'
