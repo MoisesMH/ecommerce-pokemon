@@ -29,26 +29,28 @@ stages:
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
     
-    # - task: CmdLine@2
-    #   displayName: 'Download and extract Maven 3.8.6'
-    #   inputs:
-    #     script: wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip \
-    #                 && unzip apache-maven-3.8.6-bin.zip -d /opt
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)/src'
-
-    # - task: CmdLine@2
-    #   displayName: 'Setting up Maven environmental variables'
-    #   inputs:
-    #     script: export M2_HOME=/opt/apache-maven-3.8.6 \
-    #                 && export PATH="$M2_HOME/bin:$PATH"
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)'
-    
     - task: CmdLine@2
-      displayName: 'Install Maven 3.8.6'
+      displayName: 'Download and extract Maven 3.8.6'
       inputs:
-        script: apt update \
-                    && apt install maven \
-                    && apt autoremove --purge
+        script: |
+          wget -q https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip \
+                    && unzip apache-maven-3.8.6-bin.zip -d /opt
+        workingDirectory: '$(System.DefaultWorkingDirectory)/src'
+
+    - task: CmdLine@2
+      displayName: 'Setting up Maven environmental variables'
+      inputs:
+        script: |
+          export M2_HOME=/opt/apache-maven-3.8.6 \
+                    && export PATH="$M2_HOME/bin:$PATH"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    
+    # - task: CmdLine@2
+    #   displayName: 'Install Maven 3.8.6'
+    #   inputs:
+    #     script: apt update \
+    #                 && apt install maven \
+    #                 && apt autoremove --purge
     
     - task: CmdLine@2
       displayName: 'Create and go to project folder'
@@ -69,7 +71,8 @@ stages:
     - task: CmdLine@2
       displayName: 'Copy main module'
       inputs:
-        script: 'cp -rf $(System.DefaultWorkingDirectory)/src/Services/Entidad/pokeshop-backend-identidad .'
+        script: |
+          'cp -rf $(System.DefaultWorkingDirectory)/src/Services/Entidad/pokeshop-backend-identidad .'
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend'
 
     - task: Maven@4
