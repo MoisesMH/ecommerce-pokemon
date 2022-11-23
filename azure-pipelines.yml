@@ -14,7 +14,8 @@ variables:
   buildConfiguration: 'Release'
   agentpool: 'dockeragent_moises'
   prodEnvironmentName: 'production'
-  webAppName: 'pokecatalogdb'
+  # webAppName: 'pokecatalogdb'
+  webAppNameWin: 'pokebackendcatalogwin'
   projectName: 'Catalog.API'
   azureSubscription: 'Azure for Students(0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
   AppPublishDir: '/app/publish'
@@ -68,7 +69,7 @@ stages:
       inputs:
         command: 'publish'
         publishWebProjects: true
-        arguments: '-c $(buildConfiguration) --framework $(netVer) -r $(arch) --self-contained false -o $(AppPublishDir)'
+        arguments: '-c $(buildConfiguration) -o $(AppPublishDir)'
         zipAfterPublish: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
@@ -117,34 +118,43 @@ stages:
               artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
 
-          - task: AzureAppServiceSettings@1
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              appName: '$(webAppName)'
-              resourceGroupName: '$(webAppName)_rg'
-              appSettings: |
-                [
-                  {
-                    "name": "CosmosDb:ConnectionString", 
-                    "value": "$(cosmosStr)",
-                    "slotSetting": false
-                  },
-                  {
-                    "name": "BlobStorage:ConnectionString",
-                    "value": "$(blobStr)"
-                    "slotSetting": false
-                  }
-                ]
+          # - task: AzureAppServiceSettings@1
+          #   inputs:
+          #     azureSubscription: '$(azureSubscription)'
+          #     appName: '$(webAppName)'
+          #     resourceGroupName: '$(webAppName)_rg'
+          #     appSettings: |
+          #       [
+          #         {
+          #           "name": "CosmosDb:ConnectionString", 
+          #           "value": "$(cosmosStr)",
+          #           "slotSetting": false
+          #         },
+          #         {
+          #           "name": "BlobStorage:ConnectionString",
+          #           "value": "$(blobStr)"
+          #           "slotSetting": false
+          #         }
+          #       ]
+
+          # - task: AzureRmWebAppDeployment@4
+          #   displayName: 'Deploy to Azure App Service'
+          #   inputs:
+          #     ConnectionType: 'AzureRM'
+          #     azureSubscription: '$(azureSubscription)'
+          #     appType: 'webAppLinux'
+          #     WebAppName: '$(webAppName)'
+          #     packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
+          #     RuntimeStack: 'DOTNETCORE|6.0'
+          #     StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
 
           - task: AzureRmWebAppDeployment@4
-            displayName: 'Deploy to Azure App Service'
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: '$(azureSubscription)'
-              appType: 'webAppLinux'
-              WebAppName: '$(webAppName)'
+              appType: 'webApp'
+              WebAppName: '$(webAppNameWin)'
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
-              RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
-
-          
+              AppSettings: '-Port 8001'
+              enableCustomDeployment: true
+              DeploymentType: 'webDeploy'
