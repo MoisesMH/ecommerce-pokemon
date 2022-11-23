@@ -122,17 +122,17 @@ stages:
               azureSubscription: '$(azureSubscription)'
               appName: '$(webAppName)'
               resourceGroupName: '$(webAppName)_rg'
-              connectionStrings: |
+              appSettings: |
                 [
                   {
                     "name": "CosmosDb:ConnectionString", 
                     "value": "$(cosmosStr)",
-                    "type": "Custom"
+                    "slotSetting": false
                   },
                   {
                     "name": "BlobStorage:ConnectionString",
                     "value": "$(blobStr)"
-                    "type": "Custom"
+                    "slotSetting": false
                   }
                 ]
 
