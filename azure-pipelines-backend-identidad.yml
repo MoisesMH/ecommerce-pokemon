@@ -126,7 +126,7 @@ stages:
     - task: Maven@4
       displayName: 'Deploy main module'
       inputs:
-        mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/pokeshop-backend-identidad/pom.xml'
+        mavenPomFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/$(mainProjectName)/pom.xml'
         options: 'clean package -Dmaven.test.skip=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -142,7 +142,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files to publish folder'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/src/Services/Entidad/$(mainProjectName)/target/$(mainProjectName).jar'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/src/pokeshop-backend/$(mainProjectName)/target/$(mainProjectName).jar'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(System.DefaultWorkingDirectory)/$(Build.BuildId).zip
