@@ -20,8 +20,8 @@ variables:
   AppPublishDir: '/app/publish'
   netVer: 'net6.0'
   arch: 'linux-x64'
-  blobStr: 'BlobStorage:ConnectionString=DefaultEndpointsProtocol=https;AccountName=azpokestorage;AccountKey=e5xuHFT52LNQyuMQT4lCt+dYBaihTd94G2Gt5W/f4WYjdnZeEyXXpu/TIAFuJuNIQl+T7WUkmDWi+AStD+xgrA==;EndpointSuffix=core.windows.net'
-  cosmosStr: 'CosmosDb:ConnectionString=mongodb://pokecatalogdb:oKaWKPHP1wRoRUfIioFfZryDbb7XyVarbyGmvv9Hi1hMe9cToBaDusOgBCb2BtcKrhrM70EZBNWyACDboBGsdA==@pokecatalogdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@pokecatalogdb@'
+  blobStr: 'DefaultEndpointsProtocol=https;AccountName=azpokestorage;AccountKey=e5xuHFT52LNQyuMQT4lCt+dYBaihTd94G2Gt5W/f4WYjdnZeEyXXpu/TIAFuJuNIQl+T7WUkmDWi+AStD+xgrA==;EndpointSuffix=core.windows.net'
+  cosmosStr: 'mongodb://pokecatalogdb:oKaWKPHP1wRoRUfIioFfZryDbb7XyVarbyGmvv9Hi1hMe9cToBaDusOgBCb2BtcKrhrM70EZBNWyACDboBGsdA==@pokecatalogdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@pokecatalogdb@'
   # --framework $(netVer) -r $(arch) --self-contained false 
 
 stages:
@@ -116,6 +116,25 @@ stages:
               buildType: 'current'
               artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
+
+          - task: AzureAppServiceSettings@1
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appName: '$(webAppName)'
+              resourceGroupName: '$(webAppName)_rg'
+              connectionStrings: |
+                [
+                  {
+                    "name": "CosmosDb:ConnectionString", 
+                    "value": "$(cosmosStr)",
+                    "type": "Custom"
+                  },
+                  {
+                    "name": "BlobStorage:ConnectionString",
+                    "value": "$(blobStr)"
+                    "type": "Custom"
+                  }
+                ]
 
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Azure App Service'
