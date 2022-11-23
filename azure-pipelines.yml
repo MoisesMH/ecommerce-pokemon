@@ -157,7 +157,7 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               AppSettings: '-Port 8001'
               enableCustomDeployment: true
-              DeploymentType: 'webDeploy'
+              DeploymentType: 'zipDeploy'
 
           # Thought for multi-container deployment in case Windows App Service doesn't work or it's too expensive to maintain
           # - task: AzureWebAppContainer@1
