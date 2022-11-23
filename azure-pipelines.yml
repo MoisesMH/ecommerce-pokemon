@@ -14,9 +14,16 @@ variables:
   buildConfiguration: 'Release'
   agentpool: 'dockeragent_moises'
   prodEnvironmentName: 'production'
-  webAppName: 'pokecatalogdb'
+  # webAppName: 'pokecatalogdb'
+  webAppNameWin: 'pokebackendcatalogwin'
   projectName: 'Catalog.API'
-  azureSubscription: $(AZ_SUBSCRIPTION)
+  azureSubscription: 'Azure for Students(0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
+  AppPublishDir: '/app/publish'
+  netVer: 'net6.0'
+  arch: 'linux-x64'
+  blobStr: 'DefaultEndpointsProtocol=https;AccountName=azpokestorage;AccountKey=e5xuHFT52LNQyuMQT4lCt+dYBaihTd94G2Gt5W/f4WYjdnZeEyXXpu/TIAFuJuNIQl+T7WUkmDWi+AStD+xgrA==;EndpointSuffix=core.windows.net'
+  cosmosStr: 'mongodb://pokecatalogdb:oKaWKPHP1wRoRUfIioFfZryDbb7XyVarbyGmvv9Hi1hMe9cToBaDusOgBCb2BtcKrhrM70EZBNWyACDboBGsdA==@pokecatalogdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@pokecatalogdb@'
+  # --framework $(netVer) -r $(arch) --self-contained false 
 
 stages:
 - stage: Build
@@ -32,7 +39,7 @@ stages:
       inputs:
         script: |
           apt-get update \
-              && apt-get install -y zip \
+              && apt-get install -y zip apt-transport-https \
               && apt-get autoremove \
               && apt-get clean \
               && rm -rf /var/lib/apt/lists/*
@@ -62,24 +69,24 @@ stages:
       inputs:
         command: 'publish'
         publishWebProjects: true
-        arguments: '-c $(buildConfiguration) -o /app/publish'
+        arguments: '-c $(buildConfiguration) -o $(AppPublishDir)'
         zipAfterPublish: false
         workingDirectory: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
 
     - task: ArchiveFiles@2
-      displayName: 'Archive files to publish folder'
+      displayName: 'Archive files and move publish pipeline artifacts folder'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
+        rootFolderOrFile: '$(AppPublishDir)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(Build.BuildId).zip
+        archiveFile: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
         replaceExistingArchive: true
 
     - task: CopyFiles@2
       displayName: 'Copy Files to Publish Artifacts Directory'
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)'
-        Contents: '$(System.DefaultWorkingDirectory)/src/Services/Catalog/$(projectName)/$(Build.BuildId).zip'
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
 
@@ -110,14 +117,53 @@ stages:
               buildType: 'current'
               artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
-              
+
+          # - task: AzureAppServiceSettings@1
+          #   inputs:
+          #     azureSubscription: '$(azureSubscription)'
+          #     appName: '$(webAppName)'
+          #     resourceGroupName: '$(webAppName)_rg'
+          #     appSettings: |
+          #       [
+          #         {
+          #           "name": "CosmosDb:ConnectionString", 
+          #           "value": "$(cosmosStr)",
+          #           "slotSetting": false
+          #         },
+          #         {
+          #           "name": "BlobStorage:ConnectionString",
+          #           "value": "$(blobStr)"
+          #           "slotSetting": false
+          #         }
+          #       ]
+
+          # - task: AzureRmWebAppDeployment@4
+          #   displayName: 'Deploy to Azure App Service'
+          #   inputs:
+          #     ConnectionType: 'AzureRM'
+          #     azureSubscription: '$(azureSubscription)'
+          #     appType: 'webAppLinux'
+          #     WebAppName: '$(webAppName)'
+          #     packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
+          #     RuntimeStack: 'DOTNETCORE|6.0'
+          #     StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
+
           - task: AzureRmWebAppDeployment@4
-            displayName: 'Deploy to Azure App Service'
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: $(azureSubscription)
-              appType: 'webAppLinux'
-              WebAppName: $(webAppName)
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webApp'
+              WebAppName: '$(webAppNameWin)'
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
-              RuntimeStack: 'DOTNETCORE|6.0'
-              StartupCommand: 'dotnet $(projectName).dll'
+              AppSettings: '-Port 8001'
+              enableCustomDeployment: true
+              DeploymentType: 'zipDeploy'
+
+          # Thought for multi-container deployment in case Windows App Service doesn't work or it's too expensive to maintain
+          # - task: AzureWebAppContainer@1
+          #   inputs:
+          #     azureSubscription: '$(azureSubscription)'
+          #     appName: '$(webAppNameCon)'
+          #     containers: 'mcr.microsoft.com/dotnet/aspnet:6.0, mcr.microsoft.com/dotnet/sdk:6.0'
+          #     multicontainerConfigFile: '$(System.DefaultWorkingDirectory)/docker-compose.yaml'
+          #     containerCommand: 'dotnet $(projectName)/$(projectName).dll'
