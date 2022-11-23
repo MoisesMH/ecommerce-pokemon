@@ -15,14 +15,12 @@ variables:
   agentpool: 'dockeragent_moises'
   prodEnvironmentName: 'production'
   webAppName: 'pokecatalogdb'
-  webAppNameWin: 'pokebackendcatalogwin'
   projectName: 'Catalog.API'
   azureSubscription: 'Azure for Students(0c9ccb5a-239a-4bc1-ba6d-cfaf10231094)'
   AppPublishDir: '/app/publish'
   netVer: 'net6.0'
   arch: 'linux-x64'
-  blobStr: 'DefaultEndpointsProtocol=https;AccountName=azpokestorage;AccountKey=e5xuHFT52LNQyuMQT4lCt+dYBaihTd94G2Gt5W/f4WYjdnZeEyXXpu/TIAFuJuNIQl+T7WUkmDWi+AStD+xgrA==;EndpointSuffix=core.windows.net'
-  cosmosStr: 'mongodb://pokecatalogdb:oKaWKPHP1wRoRUfIioFfZryDbb7XyVarbyGmvv9Hi1hMe9cToBaDusOgBCb2BtcKrhrM70EZBNWyACDboBGsdA==@pokecatalogdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@pokecatalogdb@'
+  # Optional parameters in publish settings
   # --framework $(netVer) -r $(arch) --self-contained false 
 
 stages:
@@ -118,25 +116,6 @@ stages:
               artifactName: '$(Build.BuildId)'
               targetPath: '$(Pipeline.Workspace)'
 
-          # - task: AzureAppServiceSettings@1
-          #   inputs:
-          #     azureSubscription: '$(azureSubscription)'
-          #     appName: '$(webAppName)'
-          #     resourceGroupName: '$(webAppName)_rg'
-          #     appSettings: |
-          #       [
-          #         {
-          #           "name": "CosmosDb:ConnectionString", 
-          #           "value": "$(cosmosStr)",
-          #           "slotSetting": false
-          #         },
-          #         {
-          #           "name": "BlobStorage:ConnectionString",
-          #           "value": "$(blobStr)"
-          #           "slotSetting": false
-          #         }
-          #       ]
-
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy to Azure App Service'
             inputs:
@@ -147,23 +126,3 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
               StartupCommand: 'dotnet $(projectName)/$(projectName).dll'
-
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: '$(azureSubscription)'
-          #     appType: 'webApp'
-          #     WebAppName: '$(webAppNameWin)'
-          #     packageForLinux: '$(Pipeline.Workspace)/$(Build.BuildId).zip'
-          #     AppSettings: '-Port 8001'
-          #     enableCustomDeployment: true
-          #     DeploymentType: 'zipDeploy'
-
-          # Thought for multi-container deployment in case Windows App Service doesn't work or it's too expensive to maintain
-          # - task: AzureWebAppContainer@1
-          #   inputs:
-          #     azureSubscription: '$(azureSubscription)'
-          #     appName: '$(webAppNameCon)'
-          #     containers: 'mcr.microsoft.com/dotnet/aspnet:6.0, mcr.microsoft.com/dotnet/sdk:6.0'
-          #     multicontainerConfigFile: '$(System.DefaultWorkingDirectory)/docker-compose.yaml'
-          #     containerCommand: 'dotnet $(projectName)/$(projectName).dll'
