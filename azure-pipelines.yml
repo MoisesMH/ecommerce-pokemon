@@ -159,4 +159,11 @@ stages:
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
 
-          
+          # Thought for multi-container deployment in case Windows App Service doesn't work or it's too expensive to maintain
+          # - task: AzureWebAppContainer@1
+          #   inputs:
+          #     azureSubscription: '$(azureSubscription)'
+          #     appName: '$(webAppNameCon)'
+          #     containers: 'mcr.microsoft.com/dotnet/aspnet:6.0, mcr.microsoft.com/dotnet/sdk:6.0'
+          #     multicontainerConfigFile: '$(System.DefaultWorkingDirectory)/docker-compose.yaml'
+          #     containerCommand: 'dotnet $(projectName)/$(projectName).dll'
